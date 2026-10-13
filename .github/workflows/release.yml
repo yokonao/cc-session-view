@@ -23,12 +23,14 @@ jobs:
       - uses: oven-sh/setup-bun@v2.2.0
       - run: bun install --frozen-lockfile
       - name: build binaries
+        env:
+          VERSION: ${{ github.ref_name }}
         run: |
           mkdir -p dist
           for target in bun-darwin-arm64 bun-darwin-x64 bun-linux-arm64 bun-linux-x64 bun-windows-x64; do
             ext=""
             [[ "$target" == *windows* ]] && ext=".exe"
-            bun build ./web/index.tsx --compile --target="$target" --outfile "dist/clauspect-${target#bun-}${ext}"
+            bun build ./web/index.tsx --compile --target="$target" --define CLAUSPECT_VERSION="\"$VERSION\"" --outfile "dist/clauspect-${target#bun-}${ext}"
           done
       - uses: actions/attest-build-provenance@v4.2.2
         with:
