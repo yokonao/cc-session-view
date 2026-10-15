@@ -124,6 +124,15 @@ function Turn(props: { group: TurnGroup; opts: RenderOptions }) {
 	if (group.kind === "compact") {
 		return <div class="compact">Context compacted</div>;
 	}
+	if (group.kind === "continued") {
+		return (
+			<div class="compact">
+				<a href={`/sessions/${group.sessionId}`}>
+					Continued in another session →
+				</a>
+			</div>
+		);
+	}
 	if (group.kind === "session-hook") {
 		return (
 			<section class="session-hook">

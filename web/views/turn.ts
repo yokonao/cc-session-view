@@ -202,7 +202,8 @@ export interface Turn {
 export type TurnGroup =
 	| Turn
 	| { kind: "compact" }
-	| { kind: "session-hook"; hook: HookBlock };
+	| { kind: "session-hook"; hook: HookBlock }
+	| { kind: "continued"; sessionId: string };
 
 function emptyTurn(): Turn {
 	return { kind: "turn", userText: [], userHooks: [], blocks: [] };
@@ -260,6 +261,9 @@ export function buildTurnGroups(entries: AnyEntry[]): TurnGroup[] {
 		) {
 			flushCurrent();
 			groups.push({ kind: "compact" });
+		} else if (entry.type === "continued-in") {
+			flushCurrent();
+			groups.push({ kind: "continued", sessionId: entry.continuedInSessionId });
 		}
 	}
 

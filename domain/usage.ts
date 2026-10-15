@@ -1,7 +1,7 @@
 import type { AnyEntry } from "./model/jsonl";
 
-// Session-level usage totals. Cost is intentionally omitted: per-model pricing
-// is uncertain and drifts, so we report raw counts and let the reader judge.
+// Session-level usage totals. We never price tokens ourselves (pricing drifts);
+// cost is only reported when Claude Code recorded its own estimate.
 export interface UsageStats {
 	inputTokens: number;
 	outputTokens: number;
@@ -13,6 +13,8 @@ export interface UsageStats {
 	webFetchRequests: number;
 	toolCounts: Record<string, number>;
 	models: string[];
+	// totalCostUSD from the last cost-state entry, if any.
+	costUSD?: number;
 }
 
 // Sum the top-level `usage` of every assistant entry. Each assistant entry's
@@ -33,6 +35,10 @@ export function aggregateUsage(entries: AnyEntry[]): UsageStats {
 	const models = new Set<string>();
 
 	for (const entry of entries) {
+		if (entry.type === "cost-state") {
+			stats.costUSD = entry.totalCostUSD;
+			continue;
+		}
 		if (entry.type !== "assistant") continue;
 		const { usage, model } = entry.message;
 		if (model) models.add(model);
