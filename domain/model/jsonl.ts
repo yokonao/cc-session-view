@@ -390,6 +390,104 @@ const McpInstructionsDeltaAttachmentSchema = z.object({
 	removedNames: z.array(z.string()),
 });
 
+// --- Context attachments injected each turn (Claude Code 2.1.300+) ---
+
+const TotalTokensReminderAttachmentSchema = z.object({
+	type: z.literal("total_tokens_reminder"),
+	text: z.string(),
+});
+
+const SilentTurnReminderAttachmentSchema = z.object({
+	type: z.literal("silent_turn_reminder"),
+	text: z.string(),
+});
+
+const DeferredToolsRecordAttachmentSchema = z.object({
+	type: z.literal("deferred_tools_record"),
+	entries: z.array(z.unknown()),
+	toolInputCopies: z.array(z.unknown()).optional(),
+});
+
+const PromptSnapshotAttachmentSchema = z.object({
+	type: z.literal("prompt_snapshot"),
+	systemPrompt: z.array(z.string()),
+	tools: z.array(z.unknown()).optional(),
+	cliPrefix: z.string().optional(),
+	contextRendering: z.string().optional(),
+	reminderFold: z.boolean().optional(),
+	echoWireToolInputs: z.boolean().optional(),
+	systemTurns: z.boolean().optional(),
+	toolChangeHeader: z.boolean().optional(),
+	inlineTools: z.boolean().optional(),
+	keptReminders: z.boolean().optional(),
+});
+
+const EnvironmentAttachmentSchema = z.object({
+	type: z.literal("environment"),
+	snapshot: z.object({
+		workingDirectory: z.string(),
+		isWorktree: z.boolean().optional(),
+		isGitRepo: z.boolean().optional(),
+		additionalWorkingDirectories: z.array(z.string()).optional(),
+		platform: z.string().optional(),
+		shell: z.string().optional(),
+		osVersion: z.string().optional(),
+		scratchpadDirectory: z.string().optional(),
+	}),
+	changes: z
+		.array(z.object({ field: z.string(), from: z.unknown().optional() }))
+		.optional(),
+});
+
+const DateAttachmentSchema = z.object({
+	type: z.literal("date"),
+	date: z.string(),
+	changed: z.boolean().optional(),
+});
+
+const InstructionsAttachmentSchema = z.object({
+	type: z.literal("instructions"),
+	files: z.array(
+		z.object({
+			path: z.string(),
+			type: z.string().optional(),
+			content: z.string().optional(),
+		}),
+	),
+	changed: z.boolean().optional(),
+	reason: z.string().optional(),
+});
+
+const SessionContextAttachmentSchema = z.object({
+	type: z.literal("session_context"),
+	context: z.record(z.string(), z.string()),
+});
+
+const CredentialOrgAttachmentSchema = z.object({
+	type: z.literal("credential_org"),
+	organizationUuid: z.string(),
+});
+
+const ModelAttachmentSchema = z.object({
+	type: z.literal("model"),
+	identity: z.object({
+		modelId: z.string(),
+		marketingName: z.string().optional(),
+		knowledgeCutoff: z.string().optional(),
+	}),
+	text: z.string(),
+});
+
+const RemoteSessionChangeAttachmentSchema = z.object({
+	type: z.literal("remote_session_change"),
+	url: z.string().nullable(),
+	commit: z.string().optional(),
+	pr: z.string().optional(),
+	sendUserFileHint: z.boolean().optional(),
+	managedCommit: z.boolean().optional(),
+	managedPr: z.boolean().optional(),
+});
+
 const AttachmentPayloadSchema = z.discriminatedUnion("type", [
 	HookSuccessAttachmentSchema,
 	SkillListingAttachmentSchema,
@@ -416,6 +514,17 @@ const AttachmentPayloadSchema = z.discriminatedUnion("type", [
 	PlanModeAttachmentSchema,
 	PlanModeExitAttachmentSchema,
 	McpInstructionsDeltaAttachmentSchema,
+	TotalTokensReminderAttachmentSchema,
+	SilentTurnReminderAttachmentSchema,
+	DeferredToolsRecordAttachmentSchema,
+	PromptSnapshotAttachmentSchema,
+	EnvironmentAttachmentSchema,
+	DateAttachmentSchema,
+	InstructionsAttachmentSchema,
+	SessionContextAttachmentSchema,
+	CredentialOrgAttachmentSchema,
+	ModelAttachmentSchema,
+	RemoteSessionChangeAttachmentSchema,
 ]);
 
 export const AttachmentEntrySchema = BaseEntrySchema.extend({
@@ -606,6 +715,101 @@ export const ModeEntrySchema = z.object({
 	sessionId: z.string().optional(),
 });
 
+// --- Session bookkeeping entries (Claude Code 2.1.300+) ---
+
+export const FileHistoryDeltaEntrySchema = z.object({
+	type: z.literal("file-history-delta"),
+	messageId: z.string(),
+	snapshotMessageId: z.string(),
+	trackingPath: z.string(),
+	backup: z.object({
+		backupFileName: z.string().nullable(),
+		version: z.number(),
+		backupTime: z.string(),
+		realParentDir: z.string().optional(),
+	}),
+	timestamp: z.string(),
+});
+
+export const AgentSettingEntrySchema = z.object({
+	type: z.literal("agent-setting"),
+	agentSetting: z.string(),
+	sessionId: z.string().optional(),
+});
+
+export const AtisLatchEntrySchema = z.object({
+	type: z.literal("atis-latch"),
+	atis: z.string(),
+	sessionId: z.string().optional(),
+});
+
+export const RelocatedEntrySchema = z.object({
+	type: z.literal("relocated"),
+	relocatedCwd: z.string(),
+	sessionId: z.string().optional(),
+});
+
+// Claude Code's own running cost estimate; each entry is a cumulative snapshot,
+// so the last one in a file is the session total.
+export const CostStateEntrySchema = z.object({
+	type: z.literal("cost-state"),
+	sessionId: z.string().optional(),
+	totalCostUSD: z.number(),
+	totalAPIDuration: z.number().optional(),
+	totalAPIDurationWithoutRetries: z.number().optional(),
+	totalToolDuration: z.number().optional(),
+	totalLinesAdded: z.number().optional(),
+	totalLinesRemoved: z.number().optional(),
+	totalDuration: z.number().optional(),
+	startTime: z.number().optional(),
+	modelUsage: z.record(z.string(), z.unknown()).optional(),
+	hasUnknownModelCost: z.boolean().optional(),
+});
+
+export const ContinuedInEntrySchema = z.object({
+	type: z.literal("continued-in"),
+	continuedInSessionId: z.string(),
+	sessionId: z.string().optional(),
+	timestamp: z.string().optional(),
+});
+
+// API request records. Payloads are kept opaque: nothing in the viewer reads
+// them yet, and their inner shape tracks the Messages API.
+export const ApiRequestEntrySchema = z.object({
+	type: z.literal("api-request"),
+	id: z.string(),
+	sessionId: z.string().optional(),
+	agentId: z.string().optional(),
+	timestamp: z.string().optional(),
+	version: z.string().optional(),
+	querySource: z.string().optional(),
+	shapeHash: z.string(),
+	params: z.record(z.string(), z.unknown()),
+	base: z.string().optional(),
+	keep: z.number().optional(),
+	tail: z.array(z.string()).optional(),
+	cacheControl: z.array(z.unknown()).optional(),
+	requestDigest: z.string().optional(),
+});
+
+export const ApiRequestShapeEntrySchema = z.object({
+	type: z.literal("api-request-shape"),
+	shapeHash: z.string(),
+	shape: z.record(z.string(), z.unknown()),
+	sessionId: z.string().optional(),
+	agentId: z.string().optional(),
+	timestamp: z.string().optional(),
+	version: z.string().optional(),
+});
+
+export const ApiRequestBlobEntrySchema = z.object({
+	type: z.literal("api-request-blob"),
+	hash: z.string(),
+	message: z.record(z.string(), z.unknown()),
+	sessionId: z.string().optional(),
+	agentId: z.string().optional(),
+});
+
 // --- Top-level discriminated union ---
 
 export const SessionEntrySchema = z.discriminatedUnion("type", [
@@ -622,6 +826,15 @@ export const SessionEntrySchema = z.discriminatedUnion("type", [
 	CustomTitleEntrySchema,
 	AiTitleEntrySchema,
 	ModeEntrySchema,
+	FileHistoryDeltaEntrySchema,
+	AgentSettingEntrySchema,
+	AtisLatchEntrySchema,
+	RelocatedEntrySchema,
+	CostStateEntrySchema,
+	ContinuedInEntrySchema,
+	ApiRequestEntrySchema,
+	ApiRequestShapeEntrySchema,
+	ApiRequestBlobEntrySchema,
 ]);
 
 // SystemEntry uses a nested discriminatedUnion, so handle separately
@@ -652,6 +865,8 @@ export type AgentNameEntry = z.infer<typeof AgentNameEntrySchema>;
 export type CustomTitleEntry = z.infer<typeof CustomTitleEntrySchema>;
 export type AiTitleEntry = z.infer<typeof AiTitleEntrySchema>;
 export type ModeEntry = z.infer<typeof ModeEntrySchema>;
+export type CostStateEntry = z.infer<typeof CostStateEntrySchema>;
+export type ContinuedInEntry = z.infer<typeof ContinuedInEntrySchema>;
 export type AnyEntry = z.infer<typeof AnyEntrySchema> | ErrorEntry;
 
 export interface ParsedSessionJsonl {
