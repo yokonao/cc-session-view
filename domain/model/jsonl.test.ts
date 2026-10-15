@@ -118,6 +118,35 @@ const lines = [
 		hash: "b1",
 		message: { role: "user", content: [] },
 	}),
+	// older shapes seen in the wild
+	att({
+		type: "queued_command",
+		prompt: [{ type: "text", text: "hi" }],
+		commandMode: "prompt",
+	}),
+	att({
+		type: "hook_system_message",
+		content: "tip",
+		hookName: "PostToolUse:Bash",
+		hookEvent: "PostToolUse",
+	}),
+	att({ type: "auto_mode_exit", bashFirst: false }),
+	att({ type: "read_truncation_notice", banner: "[Truncated]" }),
+	att({ type: "thinking_drop", requestId: "r", thinkingBlocksSent: 1 }),
+	JSON.stringify({
+		type: "system",
+		subtype: "model_refusal_no_fallback",
+		parentUuid: null,
+		isSidechain: false,
+		content: "",
+		apiRefusalCategory: "c",
+	}),
+	JSON.stringify({
+		type: "bridge-session",
+		bridgeSessionId: "b",
+		sessionId: "s",
+	}),
+	JSON.stringify({ type: "fork-context-ref", parentSessionId: "p" }),
 ];
 
 test("previously-drifting entry shapes parse without errors", () => {

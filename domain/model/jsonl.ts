@@ -200,7 +200,7 @@ const CommandPermissionsAttachmentSchema = z.object({
 
 const QueuedCommandAttachmentSchema = z.object({
 	type: z.literal("queued_command"),
-	prompt: z.string(),
+	prompt: z.union([z.string(), z.array(UserContentBlockSchema)]),
 	commandMode: z.string().optional(),
 });
 
@@ -488,6 +488,39 @@ const RemoteSessionChangeAttachmentSchema = z.object({
 	managedPr: z.boolean().optional(),
 });
 
+const HookSystemMessageAttachmentSchema = z.object({
+	type: z.literal("hook_system_message"),
+	content: z.string(),
+	hookName: z.string(),
+	toolUseID: z.string().optional(),
+	hookEvent: z.string(),
+});
+
+const AutoModeExitAttachmentSchema = z.object({
+	type: z.literal("auto_mode_exit"),
+	bashFirst: z.boolean().optional(),
+	steerOnly: z.boolean().optional(),
+});
+
+const ReadTruncationNoticeAttachmentSchema = z.object({
+	type: z.literal("read_truncation_notice"),
+	banner: z.string(),
+	toolUseID: z.string().optional(),
+});
+
+const ThinkingDropAttachmentSchema = z.object({
+	type: z.literal("thinking_drop"),
+	requestId: z.string().optional(),
+	model: z.string().optional(),
+	querySource: z.string().optional(),
+	thinkingBlocksSent: z.number().optional(),
+	thinkingTurnsSent: z.number().optional(),
+	newlyDropped: z.record(z.string(), z.unknown()).optional(),
+	blockHashes: z.array(z.unknown()).optional(),
+	firstReportForThreadInProcess: z.boolean().optional(),
+	clientChange: z.record(z.string(), z.unknown()).optional(),
+});
+
 const AttachmentPayloadSchema = z.discriminatedUnion("type", [
 	HookSuccessAttachmentSchema,
 	SkillListingAttachmentSchema,
@@ -525,6 +558,10 @@ const AttachmentPayloadSchema = z.discriminatedUnion("type", [
 	CredentialOrgAttachmentSchema,
 	ModelAttachmentSchema,
 	RemoteSessionChangeAttachmentSchema,
+	HookSystemMessageAttachmentSchema,
+	AutoModeExitAttachmentSchema,
+	ReadTruncationNoticeAttachmentSchema,
+	ThinkingDropAttachmentSchema,
 ]);
 
 export const AttachmentEntrySchema = BaseEntrySchema.extend({
@@ -621,6 +658,21 @@ const CompactBoundarySystemEntrySchema = BaseEntrySchema.extend({
 	slug: z.string().optional(),
 });
 
+const ModelRefusalNoFallbackSystemEntrySchema = BaseEntrySchema.extend({
+	type: z.literal("system"),
+	subtype: z.literal("model_refusal_no_fallback"),
+	parentUuid: z.string().nullable().optional(),
+	isSidechain: z.boolean().optional(),
+	content: z.string().optional(),
+	isMeta: z.boolean().optional(),
+	level: z.string().optional(),
+	originalModel: z.string().optional(),
+	requestId: z.string().optional(),
+	apiRefusalCategory: z.string().optional(),
+	apiRefusalExplanation: z.string().optional(),
+	refusedUserMessageUuid: z.string().optional(),
+});
+
 export const SystemEntrySchema = z.discriminatedUnion("subtype", [
 	TurnDurationSystemEntrySchema,
 	StopHookSummarySystemEntrySchema,
@@ -630,6 +682,7 @@ export const SystemEntrySchema = z.discriminatedUnion("subtype", [
 	ApiErrorSystemEntrySchema,
 	LocalCommandSystemEntrySchema,
 	CompactBoundarySystemEntrySchema,
+	ModelRefusalNoFallbackSystemEntrySchema,
 ]);
 
 // --- Other simple entry types ---
@@ -810,6 +863,23 @@ export const ApiRequestBlobEntrySchema = z.object({
 	agentId: z.string().optional(),
 });
 
+export const BridgeSessionEntrySchema = z.object({
+	type: z.literal("bridge-session"),
+	bridgeSessionId: z.string(),
+	lastSequenceNum: z.number().optional(),
+	ownerAccountUuid: z.string().optional(),
+	ownerOrganizationUuid: z.string().optional(),
+	sessionId: z.string().optional(),
+});
+
+export const ForkContextRefEntrySchema = z.object({
+	type: z.literal("fork-context-ref"),
+	agentId: z.string().optional(),
+	parentSessionId: z.string(),
+	parentLastUuid: z.string().optional(),
+	contextLength: z.number().optional(),
+});
+
 // --- Top-level discriminated union ---
 
 export const SessionEntrySchema = z.discriminatedUnion("type", [
@@ -835,6 +905,8 @@ export const SessionEntrySchema = z.discriminatedUnion("type", [
 	ApiRequestEntrySchema,
 	ApiRequestShapeEntrySchema,
 	ApiRequestBlobEntrySchema,
+	BridgeSessionEntrySchema,
+	ForkContextRefEntrySchema,
 ]);
 
 // SystemEntry uses a nested discriminatedUnion, so handle separately
