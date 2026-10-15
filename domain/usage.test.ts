@@ -91,3 +91,12 @@ test("cacheHitRate is cache reads over the whole input surface", () => {
 	expect(cacheHitRate(stats)).toBeCloseTo(0.6);
 	expect(cacheHitRate(aggregateUsage([]))).toBe(0);
 });
+
+test("costUSD comes from the last cost-state entry", () => {
+	const cost = (totalCostUSD: number) =>
+		({ type: "cost-state", totalCostUSD }) as AnyEntry;
+	expect(aggregateUsage([assistant(undefined)]).costUSD).toBeUndefined();
+	expect(
+		aggregateUsage([cost(0.4), assistant(undefined), cost(1.62)]).costUSD,
+	).toBe(1.62);
+});

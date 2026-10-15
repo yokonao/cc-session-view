@@ -44,6 +44,9 @@ export function UsageSummary({
 				/>
 				<Stat label="Cache hit" value={`${hit}%`} />
 				<Stat label="API calls" value={String(stats.messages)} />
+				{stats.costUSD !== undefined ? (
+					<Stat label="Cost (est.)" value={`$${stats.costUSD.toFixed(2)}`} />
+				) : null}
 				{stats.webSearchRequests > 0 ? (
 					<Stat label="Web search" value={String(stats.webSearchRequests)} />
 				) : null}
