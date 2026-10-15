@@ -230,3 +230,24 @@ test("meta entries and tool_result carriers don't start a turn", () => {
 	expect(g?.kind === "turn" && g.userText).toEqual(["real prompt"]);
 	expect(g?.kind === "turn" && g.blocks.length).toBe(2);
 });
+
+test("continued-in ends the turn with a link target to the next session", () => {
+	const entries = [
+		{
+			type: "user",
+			parentUuid: null,
+			isSidechain: false,
+			message: { role: "user", content: "prompt" },
+		},
+		{ type: "continued-in", continuedInSessionId: "next" },
+	] as unknown as AnyEntry[];
+
+	expect(buildTurnGroups(entries).map((g) => g.kind)).toEqual([
+		"turn",
+		"continued",
+	]);
+	expect(buildTurnGroups(entries)[1]).toEqual({
+		kind: "continued",
+		sessionId: "next",
+	});
+});
