@@ -13,7 +13,7 @@ export function Shell(props: { title: string; children: Child }) {
 			<body>
 				<header>
 					<span class="mark" aria-hidden="true" />
-					<h1>clauspect</h1>
+					<h1>cc-session-view</h1>
 					<span class="sub">Session History</span>
 				</header>
 				{props.children}

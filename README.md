@@ -1,19 +1,17 @@
-# Clauspect
+# cc-session-view
 
-Claude Code + Retrospect & Introspect = Clauspect
-
-Inspect your Claude Code session histories. Clauspect reads the JSONL logs under
+Inspect your Claude Code session histories. cc-session-view reads the JSONL logs under
 `~/.claude/projects` and renders them as readable conversations in a local web
 viewer.
 
 ## Install
 
-Download a binary from [GitHub Releases](https://github.com/yokonao/clauspect/releases), run `mise use -g github:yokonao/clauspect`, or run from source with `bun install && bun run web`. See [docs/install.md](docs/install.md) for the details and how to verify a release.
+Download a binary from [GitHub Releases](https://github.com/yokonao/cc-session-view/releases), run `mise use -g github:yokonao/cc-session-view`, or run from source with `bun install && bun run web`. See [docs/install.md](docs/install.md) for the details and how to verify a release.
 
 ## Usage
 
 ```
-clauspect        # or `bun run web` from source
+cc-session-view        # or `bun run web` from source
 ```
 
 Then open the printed `http://localhost:<port>` URL to browse and read sessions
@@ -22,11 +20,11 @@ in the browser.
 Options:
 
 ```
-clauspect --port 4111        # fixed port (default: a random free one)
-clauspect --root ./sessions  # read logs from elsewhere (default: ~/.claude/projects)
-clauspect -c ~/.claude -c ~/.claude-work  # switch between several Claude config dirs in the UI
-clauspect --unix /tmp/clauspect.sock  # listen on a Unix domain socket instead of TCP
-clauspect --help             # list all options
+cc-session-view --port 4111        # fixed port (default: a random free one)
+cc-session-view --root ./sessions  # read logs from elsewhere (default: ~/.claude/projects)
+cc-session-view -c ~/.claude -c ~/.claude-work  # switch between several Claude config dirs in the UI
+cc-session-view --unix /tmp/cc-session-view.sock  # listen on a Unix domain socket instead of TCP
+cc-session-view --help             # list all options
 ```
 
 ## Development

@@ -22,7 +22,7 @@ const userEntry = (uuid: string, content: string, isSidechain: boolean) =>
 		message: { role: "user", content },
 	});
 
-const root = join(mkdtempSync(join(tmpdir(), "clauspect-")), "projects");
+const root = join(mkdtempSync(join(tmpdir(), "cc-session-view-")), "projects");
 const projectDir = join(root, "demo");
 const subagentsDir = join(projectDir, SESSION_ID, "subagents");
 mkdirSync(subagentsDir, { recursive: true });
@@ -72,7 +72,10 @@ test("search finds text that exists only inside a subagent", async () => {
 
 describe("multiple config dirs", () => {
 	const OTHER_ID = "00000000-0000-4000-8000-000000000002";
-	const otherRoot = join(mkdtempSync(join(tmpdir(), "clauspect-")), "projects");
+	const otherRoot = join(
+		mkdtempSync(join(tmpdir(), "cc-session-view-")),
+		"projects",
+	);
 	mkdirSync(join(otherRoot, "demo"), { recursive: true });
 	writeFileSync(
 		join(otherRoot, "demo", `${OTHER_ID}.jsonl`),

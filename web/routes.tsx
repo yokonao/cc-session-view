@@ -16,7 +16,7 @@ const html = { headers: { "content-type": "text/html; charset=utf-8" } };
 
 function notFound(message: string): Response {
 	const body = renderPage(
-		<Shell title="clauspect — Not found">
+		<Shell title="cc-session-view — Not found">
 			<div class="container">
 				<a href="/" class="back">
 					← Back to sessions

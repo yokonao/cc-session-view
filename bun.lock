@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "clauspect",
+      "name": "cc-session-view",
       "dependencies": {
         "hono": "^4.13.13",
         "zod": "^4.6.7",
