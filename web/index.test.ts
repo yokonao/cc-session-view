@@ -1,4 +1,7 @@
 import { describe, expect, test } from "bun:test";
+import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 const entry = `${import.meta.dir}/index.tsx`;
 
@@ -36,6 +39,26 @@ describe("cli", () => {
 		expect(r.exitCode).toBe(1);
 		expect(r.stderr).toBe(
 			"clauspect: --root /nonexistent/clauspect is not a directory\n",
+		);
+	});
+
+	test("rejects --root together with --config-dir", () => {
+		const r = run("--root", "/tmp", "--config-dir", "/tmp");
+		expect(r.exitCode).toBe(2);
+		expect(r.stderr).toStartWith(
+			"clauspect: --root and --config-dir cannot be used together",
+		);
+	});
+
+	test("rejects config dirs that share a basename", () => {
+		const base = mkdtempSync(join(tmpdir(), "clauspect-"));
+		const dirs = ["a", "b"].map((p) => join(base, p, ".claude"));
+		for (const d of dirs) mkdirSync(d, { recursive: true });
+		const r = run("-c", dirs[0] ?? "", "-c", dirs[1] ?? "");
+		rmSync(base, { recursive: true, force: true });
+		expect(r.exitCode).toBe(2);
+		expect(r.stderr).toStartWith(
+			"clauspect: --config-dir names must be unique: .claude repeats",
 		);
 	});
 });

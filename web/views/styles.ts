@@ -103,6 +103,19 @@ input[type=text]:focus, select:focus {
 }
 .count { font-size: 0.82rem; color: var(--muted); margin-left: 2px; }
 
+/* Config dir switcher, shown only when several are served */
+.config-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+.config-tab {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-family: var(--mono);
+}
+.config-tab:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+.config-tab.active { border-color: var(--accent); color: var(--accent); background: var(--surface); }
+
 /* Buttons and button-styled links (search submit, toolbar entry point) */
 .btn {
   padding: 9px 15px;
