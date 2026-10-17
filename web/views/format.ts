@@ -18,7 +18,7 @@ export function toolSummary(
 	input: Record<string, unknown>,
 ): string {
 	const text = toolInputText(name, input);
-	const max = TOOL_SUMMARY_MAX[name];
+	const max = TOOL_SUMMARY_MAX[name] ?? (name.startsWith("mcp__") ? 120 : 0);
 	return max && text.length > max ? `${text.slice(0, max)}…` : text;
 }
 
