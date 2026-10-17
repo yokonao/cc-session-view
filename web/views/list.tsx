@@ -1,4 +1,5 @@
 import type { Session } from "../../store";
+import { ConfigTabs, type ConfigView, withConfig } from "./config";
 import { abs, rel, shortName } from "./format";
 import { renderPage, Shell } from "./shell";
 
@@ -39,12 +40,14 @@ apply();
 export function listPage(
 	data: SessionListData,
 	selected?: string | null,
+	config?: ConfigView,
 ): string {
 	const { sessions, projects } = data;
 	const now = new Date();
 	return renderPage(
 		<Shell title="clauspect — Session History">
 			<div class="container">
+				<ConfigTabs config={config} path="/" />
 				<div class="toolbar">
 					<input
 						type="text"
@@ -62,7 +65,7 @@ export function listPage(
 						))}
 					</select>
 					<span class="count" id="cnt" aria-live="polite" />
-					<a class="btn right" href="/search">
+					<a class="btn right" href={withConfig("/search", config)}>
 						Full-text search →
 					</a>
 				</div>

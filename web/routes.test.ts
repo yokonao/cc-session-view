@@ -1,4 +1,4 @@
-import { afterAll, expect, test } from "bun:test";
+import { afterAll, describe, expect, test } from "bun:test";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -47,7 +47,7 @@ writeFileSync(
 
 afterAll(() => rmSync(root, { recursive: true, force: true }));
 
-const routes = createRoutes({ root });
+const routes = createRoutes({ sources: [{ name: "fixture", root }] });
 const req = (path: string) => new Request(`http://localhost${path}`);
 
 test("--root points the app at an arbitrary log directory", async () => {
@@ -68,4 +68,56 @@ test("search finds text that exists only inside a subagent", async () => {
 	expect(body).toContain("1 hit");
 	// The hit links to the subagent's own page, not the parent session's.
 	expect(body).toContain(`/sessions/${SESSION_ID}/agents/${AGENT_ID}/raw`);
+});
+
+describe("multiple config dirs", () => {
+	const OTHER_ID = "00000000-0000-4000-8000-000000000002";
+	const otherRoot = join(mkdtempSync(join(tmpdir(), "clauspect-")), "projects");
+	mkdirSync(join(otherRoot, "demo"), { recursive: true });
+	writeFileSync(
+		join(otherRoot, "demo", `${OTHER_ID}.jsonl`),
+		userEntry("c", "hello from work", false),
+	);
+	afterAll(() => rmSync(otherRoot, { recursive: true, force: true }));
+
+	const multi = createRoutes({
+		sources: [
+			{ name: ".claude", root },
+			{ name: ".claude-work", root: otherRoot },
+		],
+	});
+
+	test("the list shows the first dir by default and switches with ?config", async () => {
+		const first = await (await multi["/"](req("/"))).text();
+		expect(first).toContain(SESSION_ID);
+		expect(first).not.toContain(OTHER_ID);
+		expect(first).toContain('href="/?config=.claude-work"');
+
+		const other = await (await multi["/"](req("/?config=.claude-work"))).text();
+		expect(other).toContain(OTHER_ID);
+		expect(other).not.toContain(SESSION_ID);
+	});
+
+	test("search is scoped to the selected dir", async () => {
+		const res = await multi["/search"](
+			req("/search?q=hello&config=.claude-work"),
+		);
+		const body = await res.text();
+		expect(body).toContain(OTHER_ID);
+		expect(body).not.toContain(SESSION_ID);
+		expect(body).toContain('name="config" value=".claude-work"');
+	});
+
+	test("session pages resolve from any dir and link back to it", async () => {
+		const res = await multi["/sessions/:id"](
+			Object.assign(req(`/sessions/${OTHER_ID}`), { params: { id: OTHER_ID } }),
+		);
+		expect(res.status).toBe(200);
+		expect(await res.text()).toContain('href="/?config=.claude-work"');
+	});
+
+	test("a single dir renders no switcher", async () => {
+		const body = await (await routes["/"](req("/"))).text();
+		expect(body).not.toContain('class="config-tabs"');
+	});
 });

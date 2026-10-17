@@ -1,5 +1,6 @@
 import type { HitKind, SearchHit } from "../../domain/search";
 import type { Session } from "../../store";
+import { ConfigTabs, type ConfigView, withConfig } from "./config";
 import { shortName } from "./format";
 import { renderPage, Shell } from "./shell";
 
@@ -13,6 +14,7 @@ export interface SearchData {
 	query: string;
 	results: SessionSearchResult[];
 	totalHits: number;
+	config?: ConfigView;
 }
 
 const KIND_LABEL: Record<HitKind, string> = {
@@ -44,14 +46,21 @@ function Hit(props: { sessionId: string; hit: SearchHit }) {
 }
 
 export function searchPage(data: SearchData): string {
-	const { query, results, totalHits } = data;
+	const { query, results, totalHits, config } = data;
+	const searchPath = query
+		? `/search?q=${encodeURIComponent(query)}`
+		: "/search";
 	return renderPage(
 		<Shell title="clauspect — search">
 			<div class="container">
-				<a href="/" class="back">
+				<a href={withConfig("/", config)} class="back">
 					← Back to sessions
 				</a>
+				<ConfigTabs config={config} path={searchPath} />
 				<form class="toolbar" method="get" action="/search">
+					{config && (
+						<input type="hidden" name="config" value={config.current} />
+					)}
 					<input
 						type="text"
 						name="q"

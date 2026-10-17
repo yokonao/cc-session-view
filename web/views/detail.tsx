@@ -12,6 +12,7 @@ export interface SessionDetailData {
 	groups: TurnGroup[];
 	opts: RenderOptions;
 	usage: UsageStats;
+	backHref: string;
 }
 
 function Agents({
@@ -43,7 +44,7 @@ function Agents({
 }
 
 export function detailPage(data: SessionDetailData): string {
-	const { session, agents, groups, opts, usage } = data;
+	const { session, agents, groups, opts, usage, backHref } = data;
 	const title = session.title || "Untitled";
 	const usageNote =
 		agents.length > 0
@@ -52,7 +53,7 @@ export function detailPage(data: SessionDetailData): string {
 	return renderPage(
 		<Shell title={`clauspect — ${title}`}>
 			<div class="container">
-				<a href="/" class="back">
+				<a href={backHref} class="back">
 					← Back to sessions
 				</a>
 				<h1 class={session.title ? "session-title" : "session-title untitled"}>

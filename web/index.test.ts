@@ -38,4 +38,20 @@ describe("cli", () => {
 			"clauspect: --root /nonexistent/clauspect is not a directory\n",
 		);
 	});
+
+	test("rejects --root together with --config-dir", () => {
+		const r = run("--root", "/tmp", "--config-dir", "/tmp");
+		expect(r.exitCode).toBe(2);
+		expect(r.stderr).toStartWith(
+			"clauspect: --root and --config-dir cannot be used together",
+		);
+	});
+
+	test("rejects config dirs that share a basename", () => {
+		const r = run("-c", "/tmp", "-c", "/private/tmp");
+		expect(r.exitCode).toBe(2);
+		expect(r.stderr).toStartWith(
+			"clauspect: --config-dir names must be unique: tmp repeats",
+		);
+	});
 });
