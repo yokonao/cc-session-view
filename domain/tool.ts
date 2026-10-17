@@ -1,7 +1,6 @@
 // The salient text of a tool call: which input field(s) best represent it.
 // Full length, no truncation — search indexes this and the conversation view
-// truncates it for display. MCP/unknown tools have arbitrary input, so we
-// don't guess; the tool name and raw JSON link are enough.
+// truncates it for display.
 export function toolInputText(
 	name: string,
 	input: Record<string, unknown>,
@@ -40,6 +39,21 @@ export function toolInputText(
 				.join(" / ");
 		}
 		default:
-			return "";
+			return name.startsWith("mcp__") ? mcpInputText(input) : "";
 	}
+}
+
+// MCP input has no known salient field, so list the top-level arguments.
+function mcpInputText(input: Record<string, unknown>): string {
+	return Object.entries(input)
+		.map(([key, value]) => `${key}=${formatArg(value)}`)
+		.join(" ");
+}
+
+function formatArg(value: unknown): string {
+	if (typeof value === "string")
+		return /\s/.test(value) || value === "" ? JSON.stringify(value) : value;
+	if (Array.isArray(value)) return `[${value.length}]`;
+	if (value !== null && typeof value === "object") return "{…}";
+	return String(value);
 }
