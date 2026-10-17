@@ -45,7 +45,7 @@ export function listPage(
 	const { sessions, projects } = data;
 	const now = new Date();
 	return renderPage(
-		<Shell title="clauspect — Session History">
+		<Shell title="cc-session-view — Session History">
 			<div class="container">
 				<ConfigTabs config={config} path="/" />
 				<div class="toolbar">

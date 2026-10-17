@@ -51,7 +51,7 @@ export function detailPage(data: SessionDetailData): string {
 			? `session + ${agents.length} subagent${agents.length > 1 ? "s" : ""}`
 			: undefined;
 	return renderPage(
-		<Shell title={`clauspect — ${title}`}>
+		<Shell title={`cc-session-view — ${title}`}>
 			<div class="container">
 				<a href={backHref} class="back">
 					← Back to sessions

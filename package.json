@@ -1,5 +1,5 @@
 {
-	"name": "clauspect",
+	"name": "cc-session-view",
 	"module": "web/index.tsx",
 	"type": "module",
 	"private": true,

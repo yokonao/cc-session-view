@@ -17,7 +17,7 @@ export function subagentPage(data: SubagentDetailData): string {
 	const { session, agent, groups, opts, usage } = data;
 	const heading = agent.description || agent.agentId;
 	return renderPage(
-		<Shell title={`clauspect — ${heading}`}>
+		<Shell title={`cc-session-view — ${heading}`}>
 			<div class="container">
 				<a href={`/sessions/${session.id}`} class="back">
 					← Back to session

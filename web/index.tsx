@@ -6,11 +6,11 @@ import { parseArgs } from "node:util";
 import { createRoutes, type LogSource } from "./routes";
 
 // Injected by `bun build --define` in the release workflow.
-declare const CLAUSPECT_VERSION: string;
+declare const CC_SESSION_VIEW_VERSION: string;
 
 const DEFAULT_PORT = 0;
 
-const USAGE = `Usage: clauspect [options]
+const USAGE = `Usage: cc-session-view [options]
 
 Inspect Claude Code session histories in a local web viewer.
 
@@ -28,9 +28,11 @@ class UsageError extends Error {}
 try {
 	await main();
 } catch (e) {
-	console.error(`clauspect: ${e instanceof Error ? e.message : String(e)}`);
+	console.error(
+		`cc-session-view: ${e instanceof Error ? e.message : String(e)}`,
+	);
 	if (e instanceof UsageError) {
-		console.error("Run 'clauspect --help' for usage.");
+		console.error("Run 'cc-session-view --help' for usage.");
 		process.exit(2);
 	}
 	process.exit(1);
@@ -45,7 +47,9 @@ async function main() {
 	}
 	if (values.version) {
 		console.log(
-			typeof CLAUSPECT_VERSION === "string" ? CLAUSPECT_VERSION : "dev",
+			typeof CC_SESSION_VIEW_VERSION === "string"
+				? CC_SESSION_VIEW_VERSION
+				: "dev",
 		);
 		return;
 	}
@@ -90,8 +94,8 @@ async function main() {
 
 	console.log(
 		values.unix
-			? `clauspect server listening on unix:${values.unix}`
-			: `clauspect server listening on http://localhost:${server.port}`,
+			? `cc-session-view server listening on unix:${values.unix}`
+			: `cc-session-view server listening on http://localhost:${server.port}`,
 	);
 	console.log("Press Ctrl+C to stop.");
 }

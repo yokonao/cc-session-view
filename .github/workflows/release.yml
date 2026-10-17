@@ -30,7 +30,7 @@ jobs:
           for target in bun-darwin-arm64 bun-darwin-x64 bun-linux-arm64 bun-linux-x64 bun-windows-x64; do
             ext=""
             [[ "$target" == *windows* ]] && ext=".exe"
-            bun build ./web/index.tsx --compile --target="$target" --define CLAUSPECT_VERSION="\"$VERSION\"" --outfile "dist/clauspect-${target#bun-}${ext}"
+            bun build ./web/index.tsx --compile --target="$target" --define CC_SESSION_VIEW_VERSION="\"$VERSION\"" --outfile "dist/cc-session-view-${target#bun-}${ext}"
           done
       - uses: actions/attest-build-provenance@v4.2.2
         with:

@@ -17,7 +17,7 @@ export function rawPage(data: RawViewData): string {
 		? agent.description || agent.agentId
 		: session.title || session.id;
 	return renderPage(
-		<Shell title={`clauspect — raw · ${label}`}>
+		<Shell title={`cc-session-view — raw · ${label}`}>
 			<div class="container">
 				<a href={backPath} class="back">
 					← Back to conversation

@@ -1,9 +1,9 @@
 ---
-name: run-clauspect
-description: Run, launch, serve, smoke-test, or screenshot clauspect — the local web viewer for Claude Code session JSONL logs. Use when asked to start the app, check a rendering change in the real UI, or capture screenshots of the session list, conversation, subagent, raw, or search pages.
+name: run-cc-session-view
+description: Run, launch, serve, smoke-test, or screenshot cc-session-view — the local web viewer for Claude Code session JSONL logs. Use when asked to start the app, check a rendering change in the real UI, or capture screenshots of the session list, conversation, subagent, raw, or search pages.
 ---
 
-# Run clauspect
+# Run cc-session-view
 
 Bun + Hono. Reads Claude Code session JSONL and server-renders it as HTML.
 **No client-side JavaScript**, so a headless browser and `curl` are the whole
@@ -25,7 +25,7 @@ don't verify rendering — a page that lost its entire usage bar still returns
 
 ```bash
 bun install
-bun run web --port 4111 >/tmp/clauspect.log 2>&1 &   # --root <dir> to read other logs
+bun run web --port 4111 >/tmp/cc-session-view.log 2>&1 &   # --root <dir> to read other logs
 sleep 1.2
 ID=$(curl -s localhost:4111/ | grep -o '/sessions/[0-9a-f-]\{36\}' | head -1 | cut -d/ -f3)
 

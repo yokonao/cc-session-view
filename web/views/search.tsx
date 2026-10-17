@@ -51,7 +51,7 @@ export function searchPage(data: SearchData): string {
 		? `/search?q=${encodeURIComponent(query)}`
 		: "/search";
 	return renderPage(
-		<Shell title="clauspect — search">
+		<Shell title="cc-session-view — search">
 			<div class="container">
 				<a href={withConfig("/", config)} class="back">
 					← Back to sessions
