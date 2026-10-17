@@ -1,4 +1,7 @@
 import { describe, expect, test } from "bun:test";
+import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 const entry = `${import.meta.dir}/index.tsx`;
 
@@ -48,10 +51,14 @@ describe("cli", () => {
 	});
 
 	test("rejects config dirs that share a basename", () => {
-		const r = run("-c", "/tmp", "-c", "/private/tmp");
+		const base = mkdtempSync(join(tmpdir(), "clauspect-"));
+		const dirs = ["a", "b"].map((p) => join(base, p, ".claude"));
+		for (const d of dirs) mkdirSync(d, { recursive: true });
+		const r = run("-c", dirs[0] ?? "", "-c", dirs[1] ?? "");
+		rmSync(base, { recursive: true, force: true });
 		expect(r.exitCode).toBe(2);
 		expect(r.stderr).toStartWith(
-			"clauspect: --config-dir names must be unique: tmp repeats",
+			"clauspect: --config-dir names must be unique: .claude repeats",
 		);
 	});
 });
