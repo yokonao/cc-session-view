@@ -133,6 +133,8 @@ const lines = [
 	att({ type: "auto_mode_exit", bashFirst: false }),
 	att({ type: "read_truncation_notice", banner: "[Truncated]" }),
 	att({ type: "thinking_drop", requestId: "r", thinkingBlocksSent: 1 }),
+	// Claude Code 2.1.302
+	att({ type: "session_cron_carry", tasks: [] }),
 	JSON.stringify({
 		type: "system",
 		subtype: "model_refusal_no_fallback",

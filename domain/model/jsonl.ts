@@ -521,6 +521,12 @@ const ThinkingDropAttachmentSchema = z.object({
 	clientChange: z.record(z.string(), z.unknown()).optional(),
 });
 
+// CronCreate tasks restored on `claude --resume`. Only empty lists observed.
+const SessionCronCarryAttachmentSchema = z.object({
+	type: z.literal("session_cron_carry"),
+	tasks: z.array(z.unknown()),
+});
+
 const AttachmentPayloadSchema = z.discriminatedUnion("type", [
 	HookSuccessAttachmentSchema,
 	SkillListingAttachmentSchema,
@@ -562,6 +568,7 @@ const AttachmentPayloadSchema = z.discriminatedUnion("type", [
 	AutoModeExitAttachmentSchema,
 	ReadTruncationNoticeAttachmentSchema,
 	ThinkingDropAttachmentSchema,
+	SessionCronCarryAttachmentSchema,
 ]);
 
 export const AttachmentEntrySchema = BaseEntrySchema.extend({

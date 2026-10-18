@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.7.1 - 2026-10-18
+
+### Fixed
+
+- Parse the `session_cron_carry` attachment that Claude Code 2.1.302 writes on `claude --resume`, instead of showing it as a parse error.
+
 ## v0.7.0 - 2026-10-18
 
 ### Changed
