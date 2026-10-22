@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.7.2 - 2026-10-23
+
+### Fixed
+
+- Count token usage and messages once per API response. Claude Code writes one transcript entry per content block with the same usage, so totals were overcounted (output tokens by about 2.8x on real transcripts).
+
 ## v0.7.1 - 2026-10-18
 
 ### Fixed

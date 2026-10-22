@@ -1,4 +1,6 @@
-import type { AnyEntry } from "./model/jsonl";
+import type { AnyEntry, AssistantEntry } from "./model/jsonl";
+
+type Usage = NonNullable<AssistantEntry["message"]["usage"]>;
 
 // Session-level usage totals. We never price tokens ourselves (pricing drifts);
 // cost is only reported when Claude Code recorded its own estimate.
@@ -17,9 +19,9 @@ export interface UsageStats {
 	costUSD?: number;
 }
 
-// Sum the top-level `usage` of every assistant entry. Each assistant entry's
-// usage covers one API response; the nested `iterations[]` is a per-response
-// breakdown of that same total, so it is deliberately NOT summed (double count).
+// Sum the top-level `usage` once per API response. Claude Code writes one entry
+// per content block, each repeating the response's `message.id` and `usage`.
+// The nested `iterations[]` breaks down that same total, so it is NOT summed.
 export function aggregateUsage(entries: AnyEntry[]): UsageStats {
 	const stats: UsageStats = {
 		inputTokens: 0,
@@ -33,6 +35,8 @@ export function aggregateUsage(entries: AnyEntry[]): UsageStats {
 		models: [],
 	};
 	const models = new Set<string>();
+	const usageById = new Map<string, Usage>();
+	const usageWithoutId: Usage[] = [];
 
 	for (const entry of entries) {
 		if (entry.type === "cost-state") {
@@ -40,7 +44,7 @@ export function aggregateUsage(entries: AnyEntry[]): UsageStats {
 			continue;
 		}
 		if (entry.type !== "assistant") continue;
-		const { usage, model } = entry.message;
+		const { id, usage, model } = entry.message;
 		if (model) models.add(model);
 
 		for (const block of entry.message.content) {
@@ -50,6 +54,11 @@ export function aggregateUsage(entries: AnyEntry[]): UsageStats {
 		}
 
 		if (!usage) continue;
+		if (id) usageById.set(id, usage);
+		else usageWithoutId.push(usage);
+	}
+
+	for (const usage of [...usageById.values(), ...usageWithoutId]) {
 		stats.messages += 1;
 		stats.inputTokens += usage.input_tokens;
 		stats.outputTokens += usage.output_tokens;
