@@ -19,7 +19,7 @@ throwaway log dir and capture that instead.
 
 ## Run it and look at it
 
-A view change is only verified when you have *looked* at the page. Status codes
+A view change is only verified when you have _looked_ at the page. Status codes
 don't verify rendering — a page that lost its entire usage bar still returns
 `200`. Screenshot it and read the PNG.
 
