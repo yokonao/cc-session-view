@@ -1,7 +1,6 @@
 # Install
 
 cc-session-view is a single binary for macOS, Linux, and Windows. Install it into a directory in your `PATH` in one of these ways:
-
 1. [GitHub Releases](#github-releases)
 1. [mise](#mise)
 1. [From source](#from-source)
