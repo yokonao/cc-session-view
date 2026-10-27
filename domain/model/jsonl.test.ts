@@ -135,6 +135,10 @@ const lines = [
 	att({ type: "thinking_drop", requestId: "r", thinkingBlocksSent: 1 }),
 	// Claude Code 2.1.302
 	att({ type: "session_cron_carry", tasks: [] }),
+	// Claude Code 2.1.310
+	att({ type: "skill_mention", skillName: "kakeibo" }),
+	// Claude Code 2.1.311
+	JSON.stringify({ type: "tools-used", tools: ["Bash"], sessionId: "s" }),
 	JSON.stringify({
 		type: "system",
 		subtype: "model_refusal_no_fallback",

@@ -527,6 +527,11 @@ const SessionCronCarryAttachmentSchema = z.object({
 	tasks: z.array(z.unknown()),
 });
 
+const SkillMentionAttachmentSchema = z.object({
+	type: z.literal("skill_mention"),
+	skillName: z.string(),
+});
+
 const AttachmentPayloadSchema = z.discriminatedUnion("type", [
 	HookSuccessAttachmentSchema,
 	SkillListingAttachmentSchema,
@@ -569,6 +574,7 @@ const AttachmentPayloadSchema = z.discriminatedUnion("type", [
 	ReadTruncationNoticeAttachmentSchema,
 	ThinkingDropAttachmentSchema,
 	SessionCronCarryAttachmentSchema,
+	SkillMentionAttachmentSchema,
 ]);
 
 export const AttachmentEntrySchema = BaseEntrySchema.extend({
@@ -803,6 +809,12 @@ export const AtisLatchEntrySchema = z.object({
 	sessionId: z.string().optional(),
 });
 
+export const ToolsUsedEntrySchema = z.object({
+	type: z.literal("tools-used"),
+	tools: z.array(z.string()),
+	sessionId: z.string().optional(),
+});
+
 export const RelocatedEntrySchema = z.object({
 	type: z.literal("relocated"),
 	relocatedCwd: z.string(),
@@ -906,6 +918,7 @@ export const SessionEntrySchema = z.discriminatedUnion("type", [
 	FileHistoryDeltaEntrySchema,
 	AgentSettingEntrySchema,
 	AtisLatchEntrySchema,
+	ToolsUsedEntrySchema,
 	RelocatedEntrySchema,
 	CostStateEntrySchema,
 	ContinuedInEntrySchema,
