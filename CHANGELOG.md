@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.7.3 - 2026-10-28
+
+### Fixed
+
+- Parse the `skill_mention` attachment from Claude Code 2.1.310 and the `tools-used` entry from Claude Code 2.1.311, instead of showing them as parse errors.
+
 ## v0.7.2 - 2026-10-23
 
 ### Fixed
