@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.7.4 - 2026-11-03
+
+### Fixed
+
+- Parse the `context_sections`, `hook_additional_context` and `language` attachments and the `session-owner`, `frame-link`, `artifact-autoreact-ledger` and `artifact-comment-monitor` entries from Claude Code 2.1.316 and 2.1.317, instead of showing them as parse errors. The conversation view shows injected context sections and additional hook context alongside other hook output.
+
 ## v0.7.3 - 2026-10-28
 
 ### Fixed

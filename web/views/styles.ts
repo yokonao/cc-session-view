@@ -517,6 +517,7 @@ tr.row:hover { background: var(--accent-soft); cursor: pointer; }
 }
 .hook-error,
 .hook-blocked { border-left-color: var(--danger); }
+.hook-context { border-left-color: var(--accent); }
 .hook-head {
   display: flex;
   align-items: baseline;

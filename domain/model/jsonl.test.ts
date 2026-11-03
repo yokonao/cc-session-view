@@ -139,6 +139,74 @@ const lines = [
 	att({ type: "skill_mention", skillName: "kakeibo" }),
 	// Claude Code 2.1.311
 	JSON.stringify({ type: "tools-used", tools: ["Bash"], sessionId: "s" }),
+	// Claude Code 2.1.316 / 2.1.317
+	att({
+		type: "context_sections",
+		sections: [{ name: "notes", text: "Reference notes." }],
+	}),
+	att({
+		type: "hook_additional_context",
+		content: ["extra context"],
+		hookName: "tool.call",
+		hookEvent: "PostToolUse",
+		toolUseID: "t",
+	}),
+	att({ type: "language", language: "English" }),
+	att({ type: "language", language: null }),
+	JSON.stringify({
+		type: "session-owner",
+		accountUuid: "a",
+		organizationUuid: "o",
+		sessionId: "s",
+	}),
+	JSON.stringify({
+		type: "frame-link",
+		sessionId: "s",
+		timestamp: "2026-01-01T00:00:00.000Z",
+		artifactCount: 1,
+	}),
+	JSON.stringify({
+		type: "frame-link",
+		sessionId: "s",
+		timestamp: "2026-01-01T00:00:00.000Z",
+		artifactCount: 1,
+		path: "/tmp/page.html",
+		frameUrl: "https://example.com/artifact/x",
+		title: "Page",
+	}),
+	JSON.stringify({
+		type: "artifact-autoreact-ledger",
+		v: 1,
+		sessionId: "s",
+		accountUuid: "a",
+		artifacts: {
+			x: {
+				savedAt: 1,
+				stampHighWater: "",
+				everBaselined: true,
+				everHadThreads: false,
+				turnTimestamps: [],
+				threads: [],
+			},
+		},
+	}),
+	JSON.stringify({
+		type: "artifact-comment-monitor",
+		v: 1,
+		sessionId: "s",
+		artifacts: {
+			x: {
+				state: "armed",
+				writtenAtMs: 1,
+				title: "Page",
+				holder: "h",
+				holderPid: 1,
+				holderJob: "j",
+				holderProcStart: "p",
+				holderPidSpace: "ps",
+			},
+		},
+	}),
 	JSON.stringify({
 		type: "system",
 		subtype: "model_refusal_no_fallback",
