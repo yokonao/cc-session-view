@@ -532,6 +532,25 @@ const SkillMentionAttachmentSchema = z.object({
 	skillName: z.string(),
 });
 
+// Named blocks a plugin injects through prompt.context (e.g. `okfBundles`).
+const ContextSectionsAttachmentSchema = z.object({
+	type: z.literal("context_sections"),
+	sections: z.array(z.object({ name: z.string(), text: z.string() })),
+});
+
+const HookAdditionalContextAttachmentSchema = z.object({
+	type: z.literal("hook_additional_context"),
+	content: z.array(z.string()),
+	hookName: z.string(),
+	hookEvent: z.string(),
+	toolUseID: z.string().optional(),
+});
+
+const LanguageAttachmentSchema = z.object({
+	type: z.literal("language"),
+	language: z.string().nullable(),
+});
+
 const AttachmentPayloadSchema = z.discriminatedUnion("type", [
 	HookSuccessAttachmentSchema,
 	SkillListingAttachmentSchema,
@@ -575,6 +594,9 @@ const AttachmentPayloadSchema = z.discriminatedUnion("type", [
 	ThinkingDropAttachmentSchema,
 	SessionCronCarryAttachmentSchema,
 	SkillMentionAttachmentSchema,
+	ContextSectionsAttachmentSchema,
+	HookAdditionalContextAttachmentSchema,
+	LanguageAttachmentSchema,
 ]);
 
 export const AttachmentEntrySchema = BaseEntrySchema.extend({
@@ -815,6 +837,62 @@ export const ToolsUsedEntrySchema = z.object({
 	sessionId: z.string().optional(),
 });
 
+export const SessionOwnerEntrySchema = z.object({
+	type: z.literal("session-owner"),
+	accountUuid: z.string(),
+	organizationUuid: z.string(),
+	sessionId: z.string().optional(),
+});
+
+export const FrameLinkEntrySchema = z.object({
+	type: z.literal("frame-link"),
+	sessionId: z.string().optional(),
+	timestamp: z.string(),
+	artifactCount: z.number(),
+	path: z.string().optional(),
+	frameUrl: z.string().optional(),
+	title: z.string().optional(),
+});
+
+// Artifact bookkeeping, keyed by artifact id. Only empty threads and
+// turnTimestamps lists have been observed, so their elements stay unknown.
+export const ArtifactAutoreactLedgerEntrySchema = z.object({
+	type: z.literal("artifact-autoreact-ledger"),
+	v: z.number(),
+	sessionId: z.string().optional(),
+	accountUuid: z.string(),
+	artifacts: z.record(
+		z.string(),
+		z.object({
+			savedAt: z.number(),
+			stampHighWater: z.string(),
+			everBaselined: z.boolean(),
+			everHadThreads: z.boolean(),
+			turnTimestamps: z.array(z.unknown()),
+			threads: z.array(z.unknown()),
+		}),
+	),
+});
+
+export const ArtifactCommentMonitorEntrySchema = z.object({
+	type: z.literal("artifact-comment-monitor"),
+	v: z.number(),
+	sessionId: z.string().optional(),
+	artifacts: z.record(
+		z.string(),
+		z.object({
+			state: z.string(),
+			writtenAtMs: z.number(),
+			title: z.string(),
+			holder: z.string().optional(),
+			holderPid: z.number().optional(),
+			holderJob: z.string().optional(),
+			holderProcStart: z.string().optional(),
+			holderPidSpace: z.string().optional(),
+		}),
+	),
+});
+
 export const RelocatedEntrySchema = z.object({
 	type: z.literal("relocated"),
 	relocatedCwd: z.string(),
@@ -919,6 +997,10 @@ export const SessionEntrySchema = z.discriminatedUnion("type", [
 	AgentSettingEntrySchema,
 	AtisLatchEntrySchema,
 	ToolsUsedEntrySchema,
+	SessionOwnerEntrySchema,
+	FrameLinkEntrySchema,
+	ArtifactAutoreactLedgerEntrySchema,
+	ArtifactCommentMonitorEntrySchema,
 	RelocatedEntrySchema,
 	CostStateEntrySchema,
 	ContinuedInEntrySchema,

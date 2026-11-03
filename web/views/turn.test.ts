@@ -251,3 +251,90 @@ test("continued-in ends the turn with a link target to the next session", () => 
 		sessionId: "next",
 	});
 });
+
+test("context_sections land on the user side, one block per section", () => {
+	const entries = [
+		{
+			type: "user",
+			parentUuid: null,
+			isSidechain: false,
+			message: { role: "user", content: "prompt" },
+		},
+		{
+			type: "attachment",
+			parentUuid: null,
+			isSidechain: false,
+			attachment: {
+				type: "context_sections",
+				sections: [
+					{ name: "notes", text: "Reference notes.\n" },
+					{ name: "empty", text: "" },
+				],
+			},
+		},
+	] as unknown as AnyEntry[];
+
+	const groups = buildTurnGroups(entries);
+	expect(groups).toHaveLength(1);
+	const g = groups[0];
+	if (g?.kind !== "turn") throw new Error("expected a turn");
+	expect(g.userHooks).toEqual([
+		{
+			event: "Context",
+			name: "notes",
+			status: "context",
+			body: "Reference notes.",
+		},
+		{ event: "Context", name: "empty", status: "context", body: undefined },
+	]);
+	expect(g.blocks).toEqual([]);
+});
+
+test("hook_additional_context routes by its hook event", () => {
+	const additional = (hookEvent: string) =>
+		({
+			type: "attachment",
+			parentUuid: null,
+			isSidechain: false,
+			attachment: {
+				type: "hook_additional_context",
+				content: ["first", "second"],
+				hookName: "h",
+				hookEvent,
+				toolUseID: "t",
+			},
+		}) as unknown as AnyEntry;
+	const entries = [
+		{
+			type: "user",
+			parentUuid: null,
+			isSidechain: false,
+			message: { role: "user", content: "prompt" },
+		},
+		additional("UserPromptSubmit"),
+		additional("PostToolUse"),
+	] as unknown as AnyEntry[];
+
+	const groups = buildTurnGroups(entries);
+	const g = groups[0];
+	if (g?.kind !== "turn") throw new Error("expected a turn");
+	expect(g.userHooks).toEqual([
+		{
+			event: "UserPromptSubmit",
+			name: "h",
+			status: "success",
+			body: "first\nsecond",
+		},
+	]);
+	expect(g.blocks).toEqual([
+		{
+			kind: "hook",
+			hook: {
+				event: "PostToolUse",
+				name: "h",
+				status: "success",
+				body: "first\nsecond",
+			},
+		},
+	]);
+});

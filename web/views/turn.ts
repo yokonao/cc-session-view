@@ -50,10 +50,12 @@ export interface ToolCall {
 // A hook firing surfaced from an attachment entry. `body` is the meaningful
 // text — for a success, the content the hook injected into the model's context;
 // for a failure, the error/stderr. The renderer decides how much to show.
+// A "context" block is a named section a plugin injected with the prompt; it
+// reuses this shape with `event` "Context" and the section name as `name`.
 export interface HookBlock {
 	event: string;
 	name: string;
-	status: "success" | "error" | "blocked" | "async";
+	status: "success" | "error" | "blocked" | "async" | "context";
 	body?: string;
 }
 
@@ -94,6 +96,13 @@ function hookBlock(entry: AttachmentEntry): HookBlock | null {
 				name: a.hookName,
 				status: "blocked",
 				body: a.blockingError.blockingError?.trim() || undefined,
+			};
+		case "hook_additional_context":
+			return {
+				event: a.hookEvent,
+				name: a.hookName,
+				status: "success",
+				body: a.content.join("\n").trim() || undefined,
 			};
 		case "async_hook_response":
 			return {
@@ -186,8 +195,9 @@ function collectAskAnswers(entries: AnyEntry[]): Map<string, AskAnswer[]> {
 // A user prompt and the assistant response it drew, in emission order. Either
 // side may be empty (assistant activity with no preceding user text, or vice
 // versa). Compaction dividers are a separate stream member, not empty turns.
-// `userHooks` are UserPromptSubmit hooks — they augment the prompt, so they
-// belong on the user side, not among the assistant blocks.
+// `userHooks` are UserPromptSubmit hooks and injected context sections — they
+// augment the prompt, so they belong on the user side, not among the assistant
+// blocks.
 export interface Turn {
 	kind: "turn";
 	userText: string[];
@@ -239,6 +249,18 @@ export function buildTurnGroups(entries: AnyEntry[]): TurnGroup[] {
 			if (!current.assistantTs) current.assistantTs = entry.timestamp;
 			current.blocks.push(...blocks);
 		} else if (entry.type === "attachment") {
+			if (entry.attachment.type === "context_sections") {
+				if (!current) current = emptyTurn();
+				for (const section of entry.attachment.sections) {
+					current.userHooks.push({
+						event: "Context",
+						name: section.name,
+						status: "context",
+						body: section.text.trim() || undefined,
+					});
+				}
+				continue;
+			}
 			const hook = hookBlock(entry);
 			if (!hook) continue;
 			// Route by event: SessionStart is a session boundary (own frame);
