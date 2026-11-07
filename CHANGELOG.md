@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.8.0 - 2026-11-08
+
+### Changed
+
+- **Breaking:** Listen on `127.0.0.1` instead of all interfaces by default, since the viewer has no authentication. Pass `--host 0.0.0.0` to accept connections from other hosts as before.
+
+### Added
+
+- `--host <addr>` chooses the TCP listen address.
+
 ## v0.7.4 - 2026-11-03
 
 ### Fixed
