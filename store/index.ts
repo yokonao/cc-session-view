@@ -1,6 +1,5 @@
 import type { Dirent, Stats } from "node:fs";
-import { existsSync } from "node:fs";
-import { readdir, stat } from "node:fs/promises";
+import { access, readdir, stat } from "node:fs/promises";
 import { basename, join } from "node:path";
 import { type ParsedSessionJsonl, parseEntries } from "../domain/model/jsonl";
 
@@ -153,7 +152,7 @@ export class SessionStore {
 		for (const projectEntry of projectEntries) {
 			if (!projectEntry.isDirectory()) continue;
 			const jsonlPath = join(this.root, projectEntry.name, `${id}.jsonl`);
-			if (!existsSync(jsonlPath)) continue;
+			if (!(await exists(jsonlPath))) continue;
 			return this.loadSession(projectEntry.name, id);
 		}
 		return undefined;
@@ -181,7 +180,7 @@ export class SessionStore {
 
 		const siblingDir = join(projectPath, sessionId);
 		let additions: string[] = [];
-		if (existsSync(siblingDir)) {
+		if (await exists(siblingDir)) {
 			const addFiles = await readdir(siblingDir, { recursive: true });
 			additions = addFiles.map((f) => join(siblingDir, f as string)).sort();
 		}
@@ -199,7 +198,7 @@ export class SessionStore {
 
 	async listSubagents(session: Session): Promise<SubagentMeta[]> {
 		const dir = this.subagentsDir(session);
-		if (!existsSync(dir)) return [];
+		if (!(await exists(dir))) return [];
 
 		let entries: string[];
 		try {
@@ -223,7 +222,7 @@ export class SessionStore {
 						"",
 					);
 					const jsonl = join(dir, `agent-${agentId}.jsonl`);
-					if (!existsSync(jsonl)) return;
+					if (!(await exists(jsonl))) return;
 
 					let meta: Record<string, unknown>;
 					try {
@@ -333,4 +332,11 @@ export class SessionStore {
 		}
 		return { title: customTitle ?? aiTitle, cwd };
 	}
+}
+
+async function exists(path: string): Promise<boolean> {
+	return access(path).then(
+		() => true,
+		() => false,
+	);
 }
