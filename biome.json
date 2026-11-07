@@ -16,9 +16,21 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"preset": "recommended"
+			"preset": "recommended",
+			"nursery": {
+				"noArrayForEach": "error",
+				"noSyncMethods": "error",
+				"noUselessAwait": "error",
+				"noUselessTypeAssertion": "error"
+			}
 		}
 	},
+	"overrides": [
+		{
+			"includes": ["**/*.test.ts", "web/index.tsx"],
+			"linter": { "rules": { "nursery": { "noSyncMethods": "off" } } }
+		}
+	],
 	"javascript": {
 		"formatter": {
 			"quoteStyle": "double"
