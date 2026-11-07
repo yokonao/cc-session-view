@@ -9,6 +9,7 @@ import { createRoutes, type LogSource } from "./routes";
 declare const CC_SESSION_VIEW_VERSION: string;
 
 const DEFAULT_PORT = 0;
+const DEFAULT_HOST = "127.0.0.1";
 
 const USAGE = `Usage: cc-session-view [options]
 
@@ -16,6 +17,9 @@ Inspect Claude Code session histories in a local web viewer.
 
 Options:
   -p, --port <port>        listen on this TCP port (default: a random free one)
+      --host <addr>        listen on this address (default: 127.0.0.1); the viewer
+                           has no authentication, so anyone who can reach it can
+                           read every session
   -r, --root <dir>         read session logs from <dir> (default: ~/.claude/projects)
   -c, --config-dir <dir>   read session logs from <dir>/projects; repeat to switch
                            between several Claude config dirs in the UI
@@ -57,6 +61,13 @@ async function main() {
 	if (values.port && values.unix) {
 		throw new UsageError("--port and --unix cannot be used together");
 	}
+	if (values.host !== undefined && values.unix) {
+		throw new UsageError("--host and --unix cannot be used together");
+	}
+	if (values.host === "") {
+		throw new UsageError("--host must not be empty");
+	}
+	const hostname = values.host ?? DEFAULT_HOST;
 
 	const port = values.port ? parseInt(values.port, 10) : DEFAULT_PORT;
 	if (Number.isNaN(port) || port < 0 || port > 65535) {
@@ -81,7 +92,7 @@ async function main() {
 	const routes = createRoutes({ sources });
 	const server = values.unix
 		? Bun.serve({ unix: values.unix, routes })
-		: Bun.serve({ port, routes });
+		: Bun.serve({ hostname, port, routes });
 	// stop() also removes the --unix socket file.
 	for (const signal of ["SIGINT", "SIGTERM"] as const) {
 		process.on(signal, async () => {
@@ -95,7 +106,7 @@ async function main() {
 	console.log(
 		values.unix
 			? `cc-session-view server listening on unix:${values.unix}`
-			: `cc-session-view server listening on http://localhost:${server.port}`,
+			: `cc-session-view server listening on http://${displayHost(values.host)}:${server.port}`,
 	);
 	console.log("Press Ctrl+C to stop.");
 }
@@ -106,6 +117,7 @@ function parseOptions() {
 			args: process.argv.slice(2),
 			options: {
 				port: { type: "string", short: "p" },
+				host: { type: "string" },
 				root: { type: "string", short: "r" },
 				"config-dir": { type: "string", short: "c", multiple: true },
 				unix: { type: "string", short: "u" },
@@ -117,6 +129,11 @@ function parseOptions() {
 	} catch (e) {
 		throw new UsageError(e instanceof Error ? e.message : String(e));
 	}
+}
+
+function displayHost(host: string | undefined): string {
+	if (host === undefined) return "localhost";
+	return host.includes(":") ? `[${host}]` : host;
 }
 
 function isDirectory(path: string): boolean {
