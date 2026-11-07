@@ -21,11 +21,16 @@ Options:
 
 ```
 cc-session-view --port 4111        # fixed port (default: a random free one)
+cc-session-view --host 0.0.0.0     # listen on all interfaces (default: 127.0.0.1)
 cc-session-view --root ./sessions  # read logs from elsewhere (default: ~/.claude/projects)
 cc-session-view -c ~/.claude -c ~/.claude-work  # switch between several Claude config dirs in the UI
 cc-session-view --unix /tmp/cc-session-view.sock  # listen on a Unix domain socket instead of TCP
 cc-session-view --help             # list all options
 ```
+
+The viewer has no authentication. Anyone who can reach the listen address can
+read every session it serves, so keep the default loopback address unless you
+trust the network.
 
 ## Development
 
