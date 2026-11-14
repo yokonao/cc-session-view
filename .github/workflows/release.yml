@@ -35,7 +35,7 @@ jobs:
       - uses: actions/attest-build-provenance@v4.2.2
         with:
           subject-path: dist/*
-      - uses: softprops/action-gh-release@v3.0.3
+      - uses: softprops/action-gh-release@v3.0.4
         with:
           files: dist/*
           body: See [CHANGELOG.md](https://github.com/yokonao/cc-session-view/blob/${{ github.ref_name }}/CHANGELOG.md).
