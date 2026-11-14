@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.9.0 - 2026-11-14
+
+### Added
+
+- Show Code Mode `REPL` calls by their description (or code), and indent the tool calls made from the REPL code under the REPL row.
+
+### Fixed
+
+- Parse the `repl-mode` entry from Claude Code 2.1.325, instead of showing it as a parse error.
+
 ## v0.8.0 - 2026-11-08
 
 ### Changed

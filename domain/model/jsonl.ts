@@ -844,6 +844,12 @@ export const SessionOwnerEntrySchema = z.object({
 	sessionId: z.string().optional(),
 });
 
+export const ReplModeEntrySchema = z.object({
+	type: z.literal("repl-mode"),
+	replMode: z.boolean(),
+	sessionId: z.string(),
+});
+
 export const FrameLinkEntrySchema = z.object({
 	type: z.literal("frame-link"),
 	sessionId: z.string().optional(),
@@ -998,6 +1004,7 @@ export const SessionEntrySchema = z.discriminatedUnion("type", [
 	AtisLatchEntrySchema,
 	ToolsUsedEntrySchema,
 	SessionOwnerEntrySchema,
+	ReplModeEntrySchema,
 	FrameLinkEntrySchema,
 	ArtifactAutoreactLedgerEntrySchema,
 	ArtifactCommentMonitorEntrySchema,

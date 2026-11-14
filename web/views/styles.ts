@@ -482,6 +482,12 @@ tr.row:hover { background: var(--accent-soft); cursor: pointer; }
   overflow-wrap: anywhere;
   padding-top: 1px;
 }
+/* Calls made from REPL code follow their REPL row, so indent them under it. */
+.repl-inner {
+  margin-left: 14px;
+  padding-left: 10px;
+  border-left: 2px solid var(--border);
+}
 /* User's chosen answers under an AskUserQuestion tool row */
 .tanswer {
   margin: 5px 0 0 0;

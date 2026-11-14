@@ -20,6 +20,8 @@ export function toolInputText(
 			return String(input.url ?? "");
 		case "Agent":
 			return String(input.description ?? input.prompt ?? "");
+		case "REPL":
+			return String(input.description ?? input.code ?? "");
 		case "Skill":
 			return String(input.skill ?? "");
 		case "Monitor":
