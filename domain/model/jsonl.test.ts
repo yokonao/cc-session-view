@@ -221,6 +221,8 @@ const lines = [
 		sessionId: "s",
 	}),
 	JSON.stringify({ type: "fork-context-ref", parentSessionId: "p" }),
+	// Claude Code 2.1.325
+	'{"type":"repl-mode","replMode":true,"sessionId":"6d816f6f-824f-474e-bb43-ea76ea97b0f7"}',
 ];
 
 test("previously-drifting entry shapes parse without errors", () => {

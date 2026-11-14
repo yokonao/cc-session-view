@@ -69,7 +69,11 @@ function Blocks(props: { blocks: AssistantBlock[]; opts: RenderOptions }) {
 						: undefined;
 				return (
 					<>
-						<div class="tool">
+						<div
+							class={
+								block.tool.id?.startsWith("repl_") ? "tool repl-inner" : "tool"
+							}
+						>
 							<span class="tname">{displayToolName(block.tool.name)}</span>
 							{summary && (
 								<span class="targ" title={summary}>

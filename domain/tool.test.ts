@@ -33,3 +33,12 @@ test("toolInputText does not truncate — search indexes the full command", () =
 	const cmd = "echo ".repeat(40).trim();
 	expect(toolInputText("Bash", { command: cmd })).toBe(cmd);
 });
+
+test("REPL text is its description, falling back to the code", () => {
+	expect(
+		toolInputText("REPL", { code: "await bash('ls')", description: "List" }),
+	).toBe("List");
+	expect(toolInputText("REPL", { code: "await bash('ls')" })).toBe(
+		"await bash('ls')",
+	);
+});
