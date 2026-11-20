@@ -338,3 +338,45 @@ test("hook_additional_context routes by its hook event", () => {
 		},
 	]);
 });
+
+test("poll_events become an events block in the current turn", () => {
+	const envelope =
+		'<event nonce="n" kind="repl-eval" at="2026-11-18T00:00:00.000Z" eval="1" ms="1" status="settled">\n<result>ok</result>\n</event>';
+	const entries = [
+		{
+			type: "user",
+			parentUuid: null,
+			isSidechain: false,
+			message: { role: "user", content: "prompt" },
+		},
+		{
+			type: "attachment",
+			parentUuid: null,
+			isSidechain: false,
+			attachment: {
+				type: "poll_events",
+				envelopes: [envelope],
+				kinds: ["repl-eval"],
+				toolsUsed: ["REPL", "Read"],
+				remainingWakeCount: 0,
+				timestamp: "2026-11-18T00:00:00.001Z",
+				provenance: [null],
+			},
+		},
+	] as unknown as AnyEntry[];
+
+	const groups = buildTurnGroups(entries);
+	expect(groups).toHaveLength(1);
+	const g = groups[0];
+	if (g?.kind !== "turn") throw new Error("expected a turn");
+	expect(g.blocks).toEqual([
+		{
+			kind: "events",
+			events: {
+				kinds: ["repl-eval"],
+				toolsUsed: ["REPL", "Read"],
+				envelopes: [envelope],
+			},
+		},
+	]);
+});

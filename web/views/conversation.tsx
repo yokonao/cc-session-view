@@ -1,6 +1,6 @@
 import { displayToolName, formatTimestamp, toolSummary } from "./format";
 import { renderMarkdown } from "./markdown";
-import type { AssistantBlock, HookBlock, TurnGroup } from "./turn";
+import type { AssistantBlock, HookBlock, PollEvents, TurnGroup } from "./turn";
 
 // --- HTML renderer ---
 //
@@ -41,6 +41,30 @@ function HookRow(props: { hook: HookBlock }) {
 	);
 }
 
+function EventsRow(props: { events: PollEvents }) {
+	const { kinds, toolsUsed, envelopes } = props.events;
+	const n = envelopes.length;
+	return (
+		<div class="hook hook-events">
+			<div class="hook-head">
+				<span class="hook-tag">⇄ Events</span>
+				<span class="hook-name">
+					{kinds.join(", ")}
+					{toolsUsed.length > 0 && ` · ${toolsUsed.join(", ")}`}
+				</span>
+			</div>
+			{n > 0 && (
+				<details class="hook-details">
+					<summary>
+						{n} {n === 1 ? "envelope" : "envelopes"}
+					</summary>
+					<div class="hook-body">{envelopes.join("\n\n")}</div>
+				</details>
+			)}
+		</div>
+	);
+}
+
 function Blocks(props: { blocks: AssistantBlock[]; opts: RenderOptions }) {
 	const { opts } = props;
 	return (
@@ -48,6 +72,7 @@ function Blocks(props: { blocks: AssistantBlock[]; opts: RenderOptions }) {
 			{props.blocks.map((block) => {
 				if (block.kind === "thinking") return null;
 				if (block.kind === "hook") return <HookRow hook={block.hook} />;
+				if (block.kind === "events") return <EventsRow events={block.events} />;
 				if (block.kind === "text") {
 					return (
 						<div

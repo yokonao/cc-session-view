@@ -68,7 +68,15 @@ export type AssistantBlock =
 	| { kind: "text"; text: string }
 	| { kind: "thinking"; text: string }
 	| { kind: "tool"; tool: ToolCall }
-	| { kind: "hook"; hook: HookBlock };
+	| { kind: "hook"; hook: HookBlock }
+	| { kind: "events"; events: PollEvents };
+
+// Code Mode background events (e.g. settled REPL evals) fed back to the model.
+export interface PollEvents {
+	kinds: string[];
+	toolsUsed: string[];
+	envelopes: string[];
+}
 
 // Normalize the hook-bearing attachment payloads into a HookBlock. Returns null
 // for non-hook attachments (files, diagnostics, skills, …) which the turn view
@@ -259,6 +267,15 @@ export function buildTurnGroups(entries: AnyEntry[]): TurnGroup[] {
 						body: section.text.trim() || undefined,
 					});
 				}
+				continue;
+			}
+			if (entry.attachment.type === "poll_events") {
+				const { kinds, toolsUsed, envelopes } = entry.attachment;
+				if (!current) current = emptyTurn();
+				current.blocks.push({
+					kind: "events",
+					events: { kinds, toolsUsed: toolsUsed ?? [], envelopes },
+				});
 				continue;
 			}
 			const hook = hookBlock(entry);

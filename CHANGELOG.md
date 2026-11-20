@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.9.1 - 2026-11-20
+
+### Fixed
+
+- Parse the Code Mode `poll_events` attachment from Claude Code 2.1.327, instead of showing it as a parse error. The conversation view shows its event kinds and tools inline, with the event envelopes collapsed.
+
 ## v0.9.0 - 2026-11-14
 
 ### Added
