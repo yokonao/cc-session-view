@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.9.2 - 2026-11-21
+
+### Fixed
+
+- Parse the Code Mode `repl_mcp_servers` attachment from Claude Code 2.1.329, instead of showing it as a parse error. The conversation view shows it as an "MCP servers" context block on the prompt, with its text collapsed.
+
 ## v0.9.1 - 2026-11-20
 
 ### Fixed

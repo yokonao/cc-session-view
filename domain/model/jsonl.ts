@@ -563,6 +563,12 @@ const PollEventsAttachmentSchema = z.object({
 	provenance: z.array(z.unknown()).optional(),
 });
 
+// Code Mode's list of connected MCP servers, injected with the prompt.
+const ReplMcpServersAttachmentSchema = z.object({
+	type: z.literal("repl_mcp_servers"),
+	content: z.string(),
+});
+
 const AttachmentPayloadSchema = z.discriminatedUnion("type", [
 	HookSuccessAttachmentSchema,
 	SkillListingAttachmentSchema,
@@ -610,6 +616,7 @@ const AttachmentPayloadSchema = z.discriminatedUnion("type", [
 	HookAdditionalContextAttachmentSchema,
 	LanguageAttachmentSchema,
 	PollEventsAttachmentSchema,
+	ReplMcpServersAttachmentSchema,
 ]);
 
 export const AttachmentEntrySchema = BaseEntrySchema.extend({
