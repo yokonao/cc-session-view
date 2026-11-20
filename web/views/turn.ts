@@ -57,6 +57,8 @@ export interface HookBlock {
 	name: string;
 	status: "success" | "error" | "blocked" | "async" | "context";
 	body?: string;
+	/** Render the body folded, for long boilerplate the reader rarely needs. */
+	collapsed?: boolean;
 }
 
 // A turn is a sequence of text, thinking, tool_use, and hook blocks in the order
@@ -267,6 +269,17 @@ export function buildTurnGroups(entries: AnyEntry[]): TurnGroup[] {
 						body: section.text.trim() || undefined,
 					});
 				}
+				continue;
+			}
+			if (entry.attachment.type === "repl_mcp_servers") {
+				if (!current) current = emptyTurn();
+				current.userHooks.push({
+					event: "Context",
+					name: "MCP servers",
+					status: "context",
+					body: entry.attachment.content.trim() || undefined,
+					collapsed: true,
+				});
 				continue;
 			}
 			if (entry.attachment.type === "poll_events") {

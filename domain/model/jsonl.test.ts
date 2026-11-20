@@ -59,6 +59,11 @@ const lines = [
 		timestamp: "2026-11-18T00:00:00.001Z",
 		provenance: [null],
 	}),
+	// Code Mode MCP server listing (Claude Code 2.1.329)
+	att({
+		type: "repl_mcp_servers",
+		content: 'MCP tools: connected servers are "a", "b".',
+	}),
 	att({
 		type: "deferred_tools_record",
 		entries: [],

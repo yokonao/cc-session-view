@@ -36,7 +36,15 @@ function HookRow(props: { hook: HookBlock }) {
 				<span class="hook-tag">⚙ {hook.event}</span>
 				<span class="hook-name">{hook.name}</span>
 			</div>
-			{hook.body && <div class="hook-body">{hook.body}</div>}
+			{hook.body &&
+				(hook.collapsed ? (
+					<details class="hook-details">
+						<summary>content</summary>
+						<div class="hook-body">{hook.body}</div>
+					</details>
+				) : (
+					<div class="hook-body">{hook.body}</div>
+				))}
 		</div>
 	);
 }

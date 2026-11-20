@@ -380,3 +380,37 @@ test("poll_events become an events block in the current turn", () => {
 		},
 	]);
 });
+
+test("repl_mcp_servers becomes a collapsed context block on the prompt", () => {
+	const entries = [
+		{
+			type: "user",
+			parentUuid: null,
+			isSidechain: false,
+			message: { role: "user", content: "prompt" },
+		},
+		{
+			type: "attachment",
+			parentUuid: null,
+			isSidechain: false,
+			attachment: {
+				type: "repl_mcp_servers",
+				content: 'MCP tools: connected servers are "a", "b".\n',
+			},
+		},
+	] as unknown as AnyEntry[];
+
+	const groups = buildTurnGroups(entries);
+	const g = groups[0];
+	if (g?.kind !== "turn") throw new Error("expected a turn");
+	expect(g.userHooks).toEqual([
+		{
+			event: "Context",
+			name: "MCP servers",
+			status: "context",
+			body: 'MCP tools: connected servers are "a", "b".',
+			collapsed: true,
+		},
+	]);
+	expect(g.blocks).toEqual([]);
+});
