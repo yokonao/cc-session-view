@@ -551,6 +551,18 @@ const LanguageAttachmentSchema = z.object({
 	language: z.string().nullable(),
 });
 
+// Code Mode background events (e.g. a settled REPL eval) delivered to the model,
+// each envelope an `<event …>` XML string. Only null provenance items observed.
+const PollEventsAttachmentSchema = z.object({
+	type: z.literal("poll_events"),
+	envelopes: z.array(z.string()),
+	kinds: z.array(z.string()),
+	toolsUsed: z.array(z.string()).optional(),
+	remainingWakeCount: z.number().optional(),
+	timestamp: z.string().optional(),
+	provenance: z.array(z.unknown()).optional(),
+});
+
 const AttachmentPayloadSchema = z.discriminatedUnion("type", [
 	HookSuccessAttachmentSchema,
 	SkillListingAttachmentSchema,
@@ -597,6 +609,7 @@ const AttachmentPayloadSchema = z.discriminatedUnion("type", [
 	ContextSectionsAttachmentSchema,
 	HookAdditionalContextAttachmentSchema,
 	LanguageAttachmentSchema,
+	PollEventsAttachmentSchema,
 ]);
 
 export const AttachmentEntrySchema = BaseEntrySchema.extend({

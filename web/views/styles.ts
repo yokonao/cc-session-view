@@ -524,6 +524,13 @@ tr.row:hover { background: var(--accent-soft); cursor: pointer; }
 .hook-error,
 .hook-blocked { border-left-color: var(--danger); }
 .hook-context { border-left-color: var(--accent); }
+.hook-details summary {
+  margin-top: 6px;
+  color: var(--faint);
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  cursor: pointer;
+}
 .hook-head {
   display: flex;
   align-items: baseline;

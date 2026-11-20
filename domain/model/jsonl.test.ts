@@ -47,6 +47,18 @@ const lines = [
 		text: "<total_tokens>1</total_tokens>",
 	}),
 	att({ type: "silent_turn_reminder", text: "x" }),
+	// Code Mode background events (Claude Code 2.1.327)
+	att({
+		type: "poll_events",
+		envelopes: [
+			'<event nonce="n" kind="repl-eval" at="2026-11-18T00:00:00.000Z" eval="1" ms="1" status="settled">\n<result>ok</result>\n</event>',
+		],
+		kinds: ["repl-eval"],
+		toolsUsed: ["REPL", "Read"],
+		remainingWakeCount: 0,
+		timestamp: "2026-11-18T00:00:00.001Z",
+		provenance: [null],
+	}),
 	att({
 		type: "deferred_tools_record",
 		entries: [],
