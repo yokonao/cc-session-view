@@ -961,6 +961,29 @@ export const DataFlowRecordsEntrySchema = z.object({
 	snapshot: z.boolean().optional(),
 });
 
+// Undocumented (Claude Code 2.1.329), like data-flow-records.
+export const DerivedFromEntrySchema = z.object({
+	type: z.literal("derived-from"),
+	v: z.number(),
+	sessionId: z.string().optional(),
+	sessions: z.array(
+		z
+			.object({
+				type: z.string().optional(),
+				id: z.string().optional(),
+				via: z.string().optional(),
+			})
+			.passthrough(),
+	),
+});
+
+export const DataFlowIncompleteEntrySchema = z.object({
+	type: z.literal("data-flow-incomplete"),
+	v: z.number(),
+	sessionId: z.string().optional(),
+	codes: z.array(z.number()),
+});
+
 export const ContinuedInEntrySchema = z.object({
 	type: z.literal("continued-in"),
 	continuedInSessionId: z.string(),
@@ -1050,6 +1073,8 @@ export const SessionEntrySchema = z.discriminatedUnion("type", [
 	RelocatedEntrySchema,
 	CostStateEntrySchema,
 	DataFlowRecordsEntrySchema,
+	DerivedFromEntrySchema,
+	DataFlowIncompleteEntrySchema,
 	ContinuedInEntrySchema,
 	ApiRequestEntrySchema,
 	ApiRequestShapeEntrySchema,
@@ -1088,6 +1113,10 @@ export type AiTitleEntry = z.infer<typeof AiTitleEntrySchema>;
 export type ModeEntry = z.infer<typeof ModeEntrySchema>;
 export type CostStateEntry = z.infer<typeof CostStateEntrySchema>;
 export type DataFlowRecordsEntry = z.infer<typeof DataFlowRecordsEntrySchema>;
+export type DerivedFromEntry = z.infer<typeof DerivedFromEntrySchema>;
+export type DataFlowIncompleteEntry = z.infer<
+	typeof DataFlowIncompleteEntrySchema
+>;
 export type ContinuedInEntry = z.infer<typeof ContinuedInEntrySchema>;
 export type AnyEntry = z.infer<typeof AnyEntrySchema> | ErrorEntry;
 

@@ -269,6 +269,18 @@ const lines = [
 			{ response_id: "msg_2", listed: ["msg_1"], mark_sent_by: "s" },
 		],
 	}),
+	JSON.stringify({
+		type: "derived-from",
+		v: 1,
+		sessionId: "s",
+		sessions: [{ type: "claude_code_session", id: "s", via: "resume" }],
+	}),
+	JSON.stringify({
+		type: "data-flow-incomplete",
+		v: 1,
+		sessionId: "s",
+		codes: [9],
+	}),
 ];
 
 test("previously-drifting entry shapes parse without errors", () => {

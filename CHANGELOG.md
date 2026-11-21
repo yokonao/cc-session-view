@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.9.4 - 2026-11-21
+
+### Fixed
+
+- Parse the undocumented `derived-from` and `data-flow-incomplete` entries from Claude Code 2.1.329, instead of showing them as parse errors.
+
 ## v0.9.3 - 2026-11-21
 
 ### Fixed
