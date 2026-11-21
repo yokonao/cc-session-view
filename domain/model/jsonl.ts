@@ -942,6 +942,25 @@ export const CostStateEntrySchema = z.object({
 	hasUnknownModelCost: z.boolean().optional(),
 });
 
+// Undocumented (Claude Code 2.1.329). Records vary in shape and carry
+// unknown meaning, so only the observed id fields are named.
+export const DataFlowRecordsEntrySchema = z.object({
+	type: z.literal("data-flow-records"),
+	v: z.number(),
+	sessionId: z.string().optional(),
+	records: z.array(
+		z
+			.object({
+				event_id: z.string().optional(),
+				response_id: z.string().optional(),
+				tool_name: z.string().optional(),
+				listed: z.array(z.string()).optional(),
+			})
+			.passthrough(),
+	),
+	snapshot: z.boolean().optional(),
+});
+
 export const ContinuedInEntrySchema = z.object({
 	type: z.literal("continued-in"),
 	continuedInSessionId: z.string(),
@@ -1030,6 +1049,7 @@ export const SessionEntrySchema = z.discriminatedUnion("type", [
 	ArtifactCommentMonitorEntrySchema,
 	RelocatedEntrySchema,
 	CostStateEntrySchema,
+	DataFlowRecordsEntrySchema,
 	ContinuedInEntrySchema,
 	ApiRequestEntrySchema,
 	ApiRequestShapeEntrySchema,
@@ -1067,6 +1087,7 @@ export type CustomTitleEntry = z.infer<typeof CustomTitleEntrySchema>;
 export type AiTitleEntry = z.infer<typeof AiTitleEntrySchema>;
 export type ModeEntry = z.infer<typeof ModeEntrySchema>;
 export type CostStateEntry = z.infer<typeof CostStateEntrySchema>;
+export type DataFlowRecordsEntry = z.infer<typeof DataFlowRecordsEntrySchema>;
 export type ContinuedInEntry = z.infer<typeof ContinuedInEntrySchema>;
 export type AnyEntry = z.infer<typeof AnyEntrySchema> | ErrorEntry;
 

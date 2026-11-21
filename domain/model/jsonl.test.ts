@@ -240,6 +240,35 @@ const lines = [
 	JSON.stringify({ type: "fork-context-ref", parentSessionId: "p" }),
 	// Claude Code 2.1.325
 	'{"type":"repl-mode","replMode":true,"sessionId":"6d816f6f-824f-474e-bb43-ea76ea97b0f7"}',
+	// Claude Code 2.1.329, undocumented
+	JSON.stringify({
+		type: "data-flow-records",
+		v: 1,
+		sessionId: "s",
+		records: [
+			{ tool_name: "ModLoaded", event_id: "event_1" },
+			{ event_id: "event_2", server: { type: "unknown" } },
+		],
+		snapshot: true,
+	}),
+	JSON.stringify({
+		type: "data-flow-records",
+		v: 1,
+		sessionId: "s",
+		records: [{ response_id: "msg_1" }],
+	}),
+	JSON.stringify({
+		type: "data-flow-records",
+		v: 1,
+		sessionId: "s",
+		records: [
+			{
+				event_id: "event_3",
+				touched: { kind: "memory", id: "m", action: "write" },
+			},
+			{ response_id: "msg_2", listed: ["msg_1"], mark_sent_by: "s" },
+		],
+	}),
 ];
 
 test("previously-drifting entry shapes parse without errors", () => {
