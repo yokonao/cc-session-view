@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.9.3 - 2026-11-21
+
+### Fixed
+
+- Parse the undocumented `data-flow-records` entry from Claude Code 2.1.329, instead of showing it as a parse error.
+
 ## v0.9.2 - 2026-11-21
 
 ### Fixed
