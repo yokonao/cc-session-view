@@ -1136,8 +1136,8 @@ export function parseEntries(text: string): ParsedSessionJsonl {
 		let raw: unknown;
 		try {
 			raw = JSON.parse(line);
-		} catch (e) {
-			entries.push({ type: "__error__", raw: line, error: String(e) });
+		} catch (error) {
+			entries.push({ type: "__error__", raw: line, error: String(error) });
 			continue;
 		}
 
