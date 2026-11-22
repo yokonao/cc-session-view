@@ -19,9 +19,25 @@
 			"preset": "recommended",
 			"nursery": {
 				"noArrayForEach": "error",
+				"noAsyncPromiseFinally": "error",
+				"noConfusingArraySplice": "error",
+				"noDuplicateTypeConstituents": "error",
+				"noInvalidFetchOptions": "error",
+				"noMisusedSpread": "error",
+				"noNewArray": "error",
+				"noRedundantTypeConstituents": "error",
 				"noSyncMethods": "error",
+				"noUnresolvedDefaultImport": "error",
 				"noUselessAwait": "error",
-				"noUselessTypeAssertion": "error"
+				"noUselessFallbackInSpread": "error",
+				"noUselessSpread": "error",
+				"noUselessTypeAssertion": "error",
+				"useAtomicUpdates": "error",
+				"useCatchErrorName": "error",
+				"useGlobalRegexInMatchAll": "error",
+				"useGlobalRegexInReplaceAll": "error",
+				"useValidCharacterComparison": "error",
+				"useValidNamespaceImports": "error"
 			}
 		}
 	},

@@ -31,11 +31,11 @@ class UsageError extends Error {}
 
 try {
 	await main();
-} catch (e) {
+} catch (error) {
 	console.error(
-		`cc-session-view: ${e instanceof Error ? e.message : String(e)}`,
+		`cc-session-view: ${error instanceof Error ? error.message : String(error)}`,
 	);
-	if (e instanceof UsageError) {
+	if (error instanceof UsageError) {
 		console.error("Run 'cc-session-view --help' for usage.");
 		process.exit(2);
 	}
@@ -126,8 +126,10 @@ function parseOptions() {
 			},
 			allowPositionals: false,
 		}).values;
-	} catch (e) {
-		throw new UsageError(e instanceof Error ? e.message : String(e));
+	} catch (error) {
+		throw new UsageError(
+			error instanceof Error ? error.message : String(error),
+		);
 	}
 }
 
