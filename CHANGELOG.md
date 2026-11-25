@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.9.5 - 2026-11-25
+
+### Fixed
+
+- Parse the undocumented `unknown_command_fallback` and `budget_usd` attachments from Claude Code 2.1.330, instead of showing them as parse errors. `claude -p` writes them for a slash command that doesn't exist and for `--max-budget-usd`. The conversation view keeps them hidden.
+
 ## v0.9.4 - 2026-11-21
 
 ### Fixed
