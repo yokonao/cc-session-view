@@ -569,6 +569,23 @@ const ReplMcpServersAttachmentSchema = z.object({
 	content: z.string(),
 });
 
+// Written when `claude -p` gets a slash command that doesn't exist
+// (Claude Code 2.1.330). availableCommandNames is a truncated sample.
+const UnknownCommandFallbackAttachmentSchema = z.object({
+	type: z.literal("unknown_command_fallback"),
+	commandName: z.string(),
+	availableCommandNames: z.array(z.string()),
+	availableCommandCount: z.number(),
+});
+
+// `claude -p --max-budget-usd` spend so far (Claude Code 2.1.330).
+const BudgetUsdAttachmentSchema = z.object({
+	type: z.literal("budget_usd"),
+	used: z.number(),
+	total: z.number(),
+	remaining: z.number(),
+});
+
 const AttachmentPayloadSchema = z.discriminatedUnion("type", [
 	HookSuccessAttachmentSchema,
 	SkillListingAttachmentSchema,
@@ -617,6 +634,8 @@ const AttachmentPayloadSchema = z.discriminatedUnion("type", [
 	LanguageAttachmentSchema,
 	PollEventsAttachmentSchema,
 	ReplMcpServersAttachmentSchema,
+	UnknownCommandFallbackAttachmentSchema,
+	BudgetUsdAttachmentSchema,
 ]);
 
 export const AttachmentEntrySchema = BaseEntrySchema.extend({

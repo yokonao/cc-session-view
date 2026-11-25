@@ -64,6 +64,14 @@ const lines = [
 		type: "repl_mcp_servers",
 		content: 'MCP tools: connected servers are "a", "b".',
 	}),
+	// Unknown slash command passed to `claude -p` (Claude Code 2.1.330)
+	att({
+		type: "unknown_command_fallback",
+		commandName: "send",
+		availableCommandNames: ["dataviz", "loop", "init"],
+		availableCommandCount: 45,
+	}),
+	att({ type: "budget_usd", used: 0, total: 0.0001, remaining: 0.0001 }),
 	att({
 		type: "deferred_tools_record",
 		entries: [],
